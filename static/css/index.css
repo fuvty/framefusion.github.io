@@ -107,21 +107,81 @@ body {
 
 .results-carousel {
   overflow: hidden;
+  padding: 1rem;
+  min-height: 400px;
 }
 
 .results-carousel .item {
   margin: 5px;
-  overflow: hidden;
-  border: 1px solid #bbb;
-  border-radius: 10px;
   padding: 0;
-  font-size: 0;
+  height: 100%;
 }
 
-.results-carousel video {
+.results-carousel .card {
+  margin: 5px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-carousel .card-image {
+  padding: 1rem;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.results-carousel .card-image figure {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.results-carousel .card-image img {
+  max-height: 300px;
+  width: auto;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.results-carousel .card-content {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-carousel .content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.results-carousel .question {
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #363636;
+}
+
+.results-carousel .token-count {
+  font-size: 0.9em;
+  color: #666;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.results-carousel .columns {
+  margin-top: 1rem;
+}
 
 .interpolation-panel {
   padding: 20px;
@@ -186,36 +246,6 @@ body {
   margin-bottom: 20px;
 }
 
-.results-carousel .card {
-  margin: 5px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.results-carousel .card-image {
-  padding: 1rem;
-  background: white;
-}
-
-.results-carousel .card-image img {
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.results-carousel .card-content {
-  padding: 1rem;
-}
-
-.results-carousel .question {
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-.results-carousel .token-count {
-  font-size: 0.9em;
-  color: #666;
-}
-
 .content {
   text-align: left;
 }
@@ -228,4 +258,193 @@ body {
 
 .abstract .content {
   text-align: justify;
+}
+
+/* Key Observations Section Styles */
+.observation-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.observation-image-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.observation-image-container img {
+  max-width: 80%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.observation-text {
+  text-align: center;
+}
+
+.observation-design {
+  text-align: center;
+  margin-top: auto;
+}
+
+.observation-arrow {
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+/* Make columns equal height */
+.equal-height-columns {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.equal-height-columns .column {
+  display: flex;
+  flex-direction: column;
+}
+
+.equal-height-columns .content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Add size control for model detail and illustration images */
+.teaser img {
+  max-width: 60%;
+  margin: 0 auto;
+  display: block;
+}
+
+.method-figure {
+  max-width: 80%;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+/* Carousel Styles */
+.results-carousel {
+  overflow: hidden;
+  padding: 1rem;
+  min-height: 400px;
+}
+
+.results-carousel .item {
+  margin: 5px;
+  padding: 0;
+  height: 100%;
+}
+
+.results-carousel .card {
+  margin: 5px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-carousel .card-image {
+  padding: 1rem;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.results-carousel .card-image figure {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.results-carousel .card-image img {
+  max-height: 300px;
+  width: auto;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.results-carousel .card-content {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-carousel .content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.results-carousel .question {
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #363636;
+}
+
+.results-carousel .token-count {
+  font-size: 0.9em;
+  color: #666;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.results-carousel .columns {
+  margin-top: 1rem;
+}
+
+/* Navigation buttons */
+.carousel-navigation-next,
+.carousel-navigation-previous {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 290486px;
+  width: 3em;
+  height: 3em;
+  margin: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  opacity: 1;
+  z-index: 99;
+}
+
+.carousel-navigation-next:hover,
+.carousel-navigation-previous:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Add pagination dots styling */
+.carousel-pagination {
+  margin-top: 1rem;
+}
+
+.pagination-list {
+  justify-content: center;
+}
+
+.pagination-link {
+  background-color: #ddd;
+  border-color: transparent;
+}
+
+.pagination-link.is-current {
+  background-color: #485fc7;
+  border-color: transparent;
 }

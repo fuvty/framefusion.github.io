@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="FrameFusion: Efficient Token Reduction for Vision-Language Models through Similarity-based Merging">
+        content="FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models">
   <meta name="keywords" content="Vision Language Models, Token Reduction, Video Understanding">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FrameFusion: Efficient Token Reduction for Vision-Language Models</title>
@@ -44,7 +44,7 @@
               <img src="./static/images/logo.jpeg" alt="Logo" class="logo-image">
             </div>
             <div class="column">
-              <h1 class="title is-1 publication-title">FrameFusion: Efficient Token Reduction for Vision-Language Models through Similarity-based Merging</h1>
+              <h1 class="title is-1 publication-title">FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models</h1>
             </div>
           </div>
           <div class="is-size-5 publication-authors">
@@ -130,12 +130,13 @@
 <section class="hero is-light is-small">
   <div class="hero-body">
     <div class="container">
+      <h2 class="title is-3 has-text-centered">Example Results</h2>
       <div id="results-carousel" class="carousel results-carousel">
         <div class="item">
           <div class="card">
             <div class="card-image">
               <figure class="image">
-                <img src="./static/images/carousel/frame_60.png" alt="Example frame">
+                <img src="./static/images/carousel/video_0.png" alt="Tom and Jerry scene">
               </figure>
             </div>
             <div class="card-content">
@@ -143,17 +144,55 @@
                 <p class="question"><strong>Q:</strong> Which animal hit the cat? Answer it simply.</p>
                 <div class="columns is-mobile">
                   <div class="column">
-                    <p><strong>Original:</strong><br>Dog<br><span class="token-count">(13,440 tokens)</span></p>
+                    <p>
+                      <strong>Original:</strong><br>
+                      Dog<br>
+                      <span class="token-count">(13,440 tokens)</span>
+                    </p>
                   </div>
                   <div class="column">
-                    <p><strong>FrameFusion:</strong><br>Dog<br><span class="token-count">(4,032 tokens)</span></p>
+                    <p>
+                      <strong>FrameFusion:</strong><br>
+                      Dog<br>
+                      <span class="token-count">(4,032 tokens)</span>
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <!-- Additional slides can be added here following the same format -->
+
+        <div class="item">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image">
+                <img src="./static/images/carousel/video_0.png" alt="Tom and Jerry scene">
+              </figure>
+            </div>
+            <div class="card-content">
+              <div class="content">
+                <p class="question"><strong>Q:</strong> Which animal hit the cat? Answer it simply.</p>
+                <div class="columns is-mobile">
+                  <div class="column">
+                    <p>
+                      <strong>Original:</strong><br>
+                      Dog<br>
+                      <span class="token-count">(13,440 tokens)</span>
+                    </p>
+                  </div>
+                  <div class="column">
+                    <p>
+                      <strong>FrameFusion:</strong><br>
+                      Dog<br>
+                      <span class="token-count">(4,032 tokens)</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -229,73 +268,67 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3">Key Observations & Design</h2>
     
-    <div class="columns">
+    <div class="columns equal-height-columns">
       <!-- Observation 1 -->
       <div class="column">
-        <div class="content">
-          <h3 class="title is-4">Observation 1: Layer-wise Distribution</h3>
-          <div class="columns is-centered">
-            <div class="column is-8">
-              <img src="./static/images/similarity_distribution.png" alt="Token similarity distribution across layers">
-            </div>
+        <div class="content observation-content">
+          <h3 class="title is-4">Observation 1:<br>Adjacent Similarity</h3>
+          <div class="observation-image-container">
+            <img src="./static/images/token_similarity.png" alt="Token similarity between frames">
           </div>
-          <p>
-            Token similarity distribution condenses as layers deepen
-          </p>
-          <p>
+          <div class="observation-text">
+            <p>High similarity between adjacent frames</p>
+          </div>
+          <div class="observation-arrow">
             <span class="icon has-text-info">
               <i class="fas fa-arrow-down"></i>
             </span>
-          </p>
-          <p>
-            <strong>Design Choice:</strong> Apply merging at shallow layers
-          </p>
+          </div>
+          <div class="observation-design">
+            <p><strong>Design Choice:</strong> O(N) adjacent-only computation</p>
+          </div>
         </div>
       </div>
 
       <!-- Observation 2 -->
       <div class="column">
-        <div class="content">
-          <h3 class="title is-4">Observation 2: Adjacent Similarity</h3>
-          <div class="columns is-centered">
-            <div class="column is-8">
-              <img src="./static/images/token_similarity.png" alt="Token similarity between frames">
-            </div>
+        <div class="content observation-content">
+          <h3 class="title is-4">Observation 2:<br>Layer-wise Distribution</h3>
+          <div class="observation-image-container">
+            <img src="./static/images/similarity_distribution.png" alt="Token similarity distribution across layers">
           </div>
-          <p>
-            High similarity between adjacent frames
-          </p>
-          <p>
+          <div class="observation-text">
+            <p>Token similarity distribution condenses as layers deepen</p>
+          </div>
+          <div class="observation-arrow">
             <span class="icon has-text-info">
               <i class="fas fa-arrow-down"></i>
             </span>
-          </p>
-          <p>
-            <strong>Design Choice:</strong> O(N) adjacent-only computation
-          </p>
+          </div>
+          <div class="observation-design">
+            <p><strong>Design Choice:</strong> Apply merging at shallow layers</p>
+          </div>
         </div>
       </div>
 
       <!-- Observation 3 -->
       <div class="column">
-        <div class="content">
-          <h3 class="title is-4">Observation 3: Ranking Consistency</h3>
-          <div class="columns is-centered">
-            <div class="column is-8">
-              <img src="./static/images/spearman_rank_correlation.png" alt="Similarity ranking consistency">
-            </div>
+        <div class="content observation-content">
+          <h3 class="title is-4">Observation 3:<br>Ranking Consistency</h3>
+          <div class="observation-image-container">
+            <img src="./static/images/spearman_rank_correlation.png" alt="Similarity ranking consistency">
           </div>
-          <p>
-            High similarity ranking consistency across layers
-          </p>
-          <p>
+          <div class="observation-text">
+            <p>High similarity ranking consistency across layers</p>
+          </div>
+          <div class="observation-arrow">
             <span class="icon has-text-info">
               <i class="fas fa-arrow-down"></i>
             </span>
-          </p>
-          <p>
-            <strong>Design Choice:</strong> Cascaded merging strategy
-          </p>
+          </div>
+          <div class="observation-design">
+            <p><strong>Design Choice:</strong> Cascaded merging strategy</p>
+          </div>
         </div>
       </div>
     </div>
@@ -381,7 +414,7 @@
       <div class="column is-10">
         <div class="columns is-vcentered interpolation-panel">
           <div class="column is-3 has-text-centered">
-            <img src="./static/images/tom_jerry/frame_0.png"
+            <img src="./static/images/tom_jerry/frame_60.png"
                  class="interpolation-image"
                  alt="Original frame"/>
             <p>Original Frame<br/>(256 tokens)</p>
@@ -395,7 +428,7 @@
                    step="1" min="0" max="100" value="0" type="range">
           </div>
           <div class="column is-3 has-text-centered">
-            <img src="./static/images/tom_jerry_prune/frame_0.png"
+            <img src="./static/images/tom_jerry_prune/frame_60.png"
                  class="interpolation-image"
                  alt="Pruned frame"/>
             <p>After FrameFusion<br/>(77 tokens)</p>
