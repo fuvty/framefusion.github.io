@@ -13,11 +13,6 @@ body {
     margin-bottom: 5px;
 }
 
-.dnerf {
-  font-variant: small-caps;
-}
-
-
 .teaser .hero-body {
   padding-top: 0;
   padding-bottom: 3rem;
@@ -129,13 +124,17 @@ body {
 
 
 .interpolation-panel {
+  padding: 20px;
   background: #f5f5f5;
   border-radius: 10px;
+  margin-bottom: 20px;
 }
 
 .interpolation-panel .interpolation-image {
   width: 100%;
+  height: auto;
   border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .interpolation-video-column {
@@ -154,4 +153,79 @@ body {
 }
 #interpolation-image-wrapper img {
   border-radius: 5px;
+}
+
+.slider {
+  margin-top: 20px;
+}
+
+.framefusion {
+  font-weight: bold;
+  color: #4a90e2;
+}
+
+.logo-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-right: 20px;
+}
+
+/* Add any additional custom styles here */
+
+.method-figure {
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.caption {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.results-carousel .card {
+  margin: 5px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.results-carousel .card-image {
+  padding: 1rem;
+  background: white;
+}
+
+.results-carousel .card-image img {
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.results-carousel .card-content {
+  padding: 1rem;
+}
+
+.results-carousel .question {
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.results-carousel .token-count {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.content {
+  text-align: left;
+}
+
+.content h2,
+.content h3,
+.content h4 {
+  text-align: left;
+}
+
+.abstract .content {
+  text-align: justify;
 }

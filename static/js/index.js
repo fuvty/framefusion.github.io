@@ -76,3 +76,45 @@ $(document).ready(function() {
     bulmaSlider.attach();
 
 })
+
+// Slider logic for frame interpolation
+document.addEventListener('DOMContentLoaded', function () {
+  // Frame interpolation
+  const slider = document.getElementById('interpolation-slider');
+  const wrapper = document.getElementById('interpolation-image-wrapper');
+  
+  // Total number of frames (0-63 based on the files)
+  const totalFrames = 63;
+  
+  function updateImage(value) {
+    const frameNumber = Math.round((totalFrames * value) / 100);
+    wrapper.innerHTML = `
+      <div class="columns is-centered">
+        <div class="column">
+          <img src="./static/images/tom_jerry/frame_${frameNumber}.png" class="interpolation-image">
+        </div>
+        <div class="column">
+          <img src="./static/images/tom_jerry_prune/frame_${frameNumber}.png" class="interpolation-image">
+        </div>
+      </div>
+    `;
+  }
+  
+  if (slider && wrapper) {
+    // Set initial image
+    updateImage(0);
+    
+    // Update image when slider moves
+    slider.addEventListener('input', function(e) {
+      updateImage(e.target.value);
+    });
+  }
+
+  // Initialize all carousels
+  bulmaCarousel.attach('.carousel', {
+    slidesToScroll: 1,
+    slidesToShow: 1,
+    infinite: true,
+    autoplay: true
+  });
+});
