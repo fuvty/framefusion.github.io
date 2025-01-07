@@ -130,13 +130,16 @@
 <section class="hero is-light is-small">
   <div class="hero-body">
     <div class="container">
-      <h2 class="title is-3 has-text-centered">Example Results</h2>
+      <!-- <h2 class="title is-3 has-text-centered">Example Results</h2> -->
       <div id="results-carousel" class="carousel results-carousel">
+        <!-- Example 0: Tom and Jerry -->
         <div class="item">
           <div class="card">
             <div class="card-image">
               <figure class="image">
-                <img src="./static/images/carousel/video_0.png" alt="Tom and Jerry scene">
+                <video autoplay loop muted playsinline class="carousel-video">
+                  <source src="./static/images/carousel/Tom_Jerry_compressed.mp4" type="video/mp4">
+                </video>
               </figure>
             </div>
             <div class="card-content">
@@ -161,27 +164,30 @@
           </div>
         </div>
 
+        <!-- Example 1: Turing -->
         <div class="item">
           <div class="card">
             <div class="card-image">
               <figure class="image">
-                <img src="./static/images/carousel/video_0.png" alt="Tom and Jerry scene">
+                <video autoplay loop muted playsinline class="carousel-video">
+                  <source src="./static/images/carousel/Turing_compressed.mp4" type="video/mp4">
+                </video>
               </figure>
             </div>
             <div class="card-content">
               <div class="content">
                 <div class="qa-section">
-                  <p class="question"><strong>Q:</strong> Which animal hit the cat? Answer it simply.</p>
+                  <p class="question"><strong>Q:</strong> How many main characters are there in the video?</p>
                   <div class="answer-comparison">
                     <div class="answer-box">
                       <div class="answer-label">Original</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">13,440 tokens</div>
+                      <div class="answer"><strong>A:</strong> There are two main characters in the video.</div>
+                      <div class="token-count">10,290 tokens</div>
                     </div>
                     <div class="answer-box">
                       <div class="answer-label">FrameFusion</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">4,032 tokens</div>
+                      <div class="answer"><strong>A:</strong> There are two main characters in the video.</div>
+                      <div class="token-count">3,087 tokens</div>
                     </div>
                   </div>
                 </div>
@@ -190,27 +196,30 @@
           </div>
         </div>
 
+        <!-- Example 2: Monkey -->
         <div class="item">
           <div class="card">
             <div class="card-image">
               <figure class="image">
-                <img src="./static/images/carousel/video_0.png" alt="Tom and Jerry scene">
+                <video autoplay loop muted playsinline class="carousel-video">
+                  <source src="./static/images/carousel/Monkey_compressed.mp4" type="video/mp4">
+                </video>
               </figure>
             </div>
             <div class="card-content">
               <div class="content">
                 <div class="qa-section">
-                  <p class="question"><strong>Q:</strong> Which animal hit the cat? Answer it simply.</p>
+                  <p class="question"><strong>Q:</strong> What animal saves the monkey? Answer it simply.</p>
                   <div class="answer-comparison">
                     <div class="answer-box">
                       <div class="answer-label">Original</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">13,440 tokens</div>
+                      <div class="answer"><strong>A:</strong> A turtle.</div>
+                      <div class="token-count">9,870 tokens</div>
                     </div>
                     <div class="answer-box">
                       <div class="answer-label">FrameFusion</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">4,032 tokens</div>
+                      <div class="answer"><strong>A:</strong> A turtle.</div>
+                      <div class="token-count">2,961 tokens</div>
                     </div>
                   </div>
                 </div>
@@ -219,34 +228,6 @@
           </div>
         </div>
 
-        <div class="item">
-          <div class="card">
-            <div class="card-image">
-              <figure class="image">
-                <img src="./static/images/carousel/video_0.png" alt="Tom and Jerry scene">
-              </figure>
-            </div>
-            <div class="card-content">
-              <div class="content">
-                <div class="qa-section">
-                  <p class="question"><strong>Q:</strong> Which animal hit the cat? Answer it simply.</p>
-                  <div class="answer-comparison">
-                    <div class="answer-box">
-                      <div class="answer-label">Original</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">13,440 tokens</div>
-                    </div>
-                    <div class="answer-box">
-                      <div class="answer-label">FrameFusion</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">4,032 tokens</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

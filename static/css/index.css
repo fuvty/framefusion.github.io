@@ -515,3 +515,17 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
 }
+
+.results-carousel .carousel-video {
+  max-height: 300px;
+  width: auto;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* Play the video at 6.6x speed to complete in 10 seconds (66 frames at 1fps) */
+  animation: speedup 10s steps(66) infinite;
+}
+
+@keyframes speedup {
+  from { transform: none; }
+  to { transform: none; }
+}

@@ -9,8 +9,8 @@ $(document).ready(function() {
 
     // Initialize Carousel
     bulmaCarousel.attach('#results-carousel', {
-      slidesToScroll: 2,
-      slidesToShow: 2,
+      slidesToScroll: 1,
+      slidesToShow: 1,
       infinite: true,
       autoplay: false,
       navigation: true,
@@ -49,4 +49,11 @@ $(document).ready(function() {
     }
 
     bulmaSlider.attach();
+
+    // Initialize carousel videos
+    const carouselVideos = document.querySelectorAll('.carousel-video');
+    carouselVideos.forEach(video => {
+      // Set playback rate to complete in 10 seconds (66 frames at 1fps = 6.6x speed)
+      video.playbackRate = 6.6;
+    });
 });
