@@ -30,6 +30,7 @@
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
   <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="./static/js/index.js"></script>
 </head>
 <body>
@@ -434,7 +435,6 @@
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3">Results</h2>
-
     <!-- Interactive Performance Table -->
     <div class="content">
         <div class="performance-section-header">
@@ -539,9 +539,59 @@
             </table>
           </div>
         </div>
-      </div>
+    </div>
 
-    <!-- Performance vs Budget -->
+    <!-- Interactive Runtime Comparison -->
+    <div class="content">
+        <h3 class="title is-4">Runtime Comparison</h3>
+        <p>FrameFusion runtime performance with different token budgets and frame counts. Select a model and cost level to see the comparison with the original model. </p>
+        <p><span class="framefusion">FrameFusion</span> achieves 1.6 – 3.6× end-to-end speedup, scaling better with larger models and more frames.</p>
+
+        <!-- Controls -->
+        <div class="runtime-controls">
+            <div class="filters-wrapper">
+                <div class="filter-item" style="flex: 1; min-width: 200px;">
+                    <label class="filter-label">Model</label>
+                    <div class="custom-select">
+                        <select id="runtimeModelSelect">
+                            <option value="Llava-Video-7B">Llava-Video-7B</option>
+                            <option value="Llava-Video-32B">Llava-Video-32B</option>
+                            <option value="Llava-Video-72B">Llava-Video-72B</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-item" style="flex: 1; min-width: 200px;">
+                    <label class="filter-label">Token Budget</label>
+                    <div class="custom-select">
+                        <select id="runtimeCostSelect">
+                            <option value="0.3">30% (0.3)</option>
+                            <option value="0.5">50% (0.5)</option>
+                            <option value="0.7">70% (0.7)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Chart Container -->
+        <div class="runtime-chart-container">
+            <canvas id="runtimeChart" width="800" height="400"></canvas>
+        </div>
+    
+        <!-- Speedup Summary -->
+        <div class="runtime-summary">
+            <div class="notification is-info is-light">
+            <div class="content">
+                <h4 class="title is-5">Speedup Summary</h4>
+                <div id="speedupSummary">
+                <p>Select a model and cost level to see speedup statistics.</p>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance vs Budget
     <div class="content">
       <h3 class="title is-4">Performance vs. Token Budget</h3>
       <table class="table is-fullwidth">
@@ -578,24 +628,7 @@
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <!-- Speedup Across Models -->
-    <div class="content">
-      <h3 class="title is-4">Speedup Across Models</h3>
-      <div class="columns is-centered">
-        <div class="column is-8">
-          <img src="./static/images/efficiency.png" alt="Speedup across different model sizes">
-        </div>
-      </div>
-      <p>
-        <span class="framefusion">FrameFusion</span> achieves:
-      </p>
-      <ul>
-        <li>1.6 – 3.6× end-to-end speedup</li>
-        <li>Scales better with larger models and more frames</li>
-      </ul>
-    </div>
+    </div> -->
   </div>
 </section>
 

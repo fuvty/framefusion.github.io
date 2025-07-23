@@ -1210,3 +1210,90 @@ body {
     text-align: left;
   }
 }
+
+/* Runtime Comparison Styles */
+.runtime-controls {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.runtime-controls .label {
+  font-weight: 600;
+  color: #363636;
+  margin-bottom: 0.5rem;
+}
+
+.runtime-controls .filter-item {
+  margin-bottom: 0.25rem;
+}
+
+.runtime-controls .filter-label {
+  margin-bottom: 0.25rem;
+}
+
+.runtime-controls .filters-wrapper {
+  gap: 1.5rem;
+}
+
+.runtime-controls .custom-select select {
+  height: 2.5rem;
+  padding: 0.75rem 2rem 0.75rem 0.75rem;
+  line-height: 1rem;
+  box-sizing: border-box;
+}
+
+.runtime-chart-container {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.runtime-chart-container canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.runtime-summary {
+  margin-top: 2rem;
+}
+
+.runtime-summary .notification {
+  border-left: 4px solid #3273dc;
+}
+
+.runtime-summary .title {
+  margin-bottom: 1rem;
+  color: #363636;
+}
+
+.speedup-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.speedup-stat {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.speedup-stat .value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #3273dc;
+}
+
+.speedup-stat .label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+}

@@ -72,6 +72,9 @@ $(document).ready(function() {
 
     // Interactive Performance Table functionality
     initializePerformanceTable();
+    
+    // Initialize Runtime Comparison Chart
+    initializeRuntimeChart();
 });
 
 // Performance Table functionality
@@ -737,4 +740,270 @@ function resetCarouselLoading() {
     setTimeout(() => {
         initializeCarouselLoading();
     }, 100);
+}
+
+// Runtime Comparison Chart functionality
+let runtimeChart = null;
+let runtimeData = [];
+
+function initializeRuntimeChart() {
+  // Load runtime data
+  loadRuntimeData();
+  
+  // Setup event listeners
+  document.getElementById('runtimeModelSelect').addEventListener('change', updateRuntimeChart);
+  document.getElementById('runtimeCostSelect').addEventListener('change', updateRuntimeChart);
+  
+  // Initialize chart
+  updateRuntimeChart();
+}
+
+function loadRuntimeData() {
+  // Parse the CSV data from the file
+  const csvData = `Model,n_frames,cost,num GPU,Prefill time
+Llava-Video-7B,32,1.0,1,917.81
+Llava-Video-7B,32,0.3,1,569.56
+Llava-Video-7B,32,0.5,1,672.66
+Llava-Video-7B,32,0.7,1,771.84
+Llava-Video-7B,64,1.0,1,1900.63
+Llava-Video-7B,64,0.3,1,1111.81
+Llava-Video-7B,64,0.5,1,1317.25
+Llava-Video-7B,64,0.7,1,1547.23
+Llava-Video-7B,85,1.0,1,2605.55
+Llava-Video-7B,85,0.3,1,1472.56
+Llava-Video-7B,85,0.5,1,1763.23
+Llava-Video-7B,85,0.7,1,2081.31
+Llava-Video-7B,107,1.0,1,3377.91
+Llava-Video-7B,107,0.3,1,1848.56
+Llava-Video-7B,107,0.5,1,2232.30
+Llava-Video-7B,107,0.7,1,2669.80
+Llava-Video-7B,128,1.0,1,4184.29
+Llava-Video-7B,128,0.3,1,2222.68
+Llava-Video-7B,128,0.5,1,2699.80
+Llava-Video-7B,128,0.7,1,3251.99
+Llava-Video-7B,256,1.0,1,9510.37
+Llava-Video-7B,256,0.3,1,4499.91
+Llava-Video-32B,32,1.0,1,2147.56
+Llava-Video-32B,32,0.3,1,912.16
+Llava-Video-32B,32,0.5,1,1253.50
+Llava-Video-32B,32,0.7,1,1652.82
+Llava-Video-32B,64,1.0,1,4506.73
+Llava-Video-32B,64,0.3,1,1800.40
+Llava-Video-32B,64,0.5,1,2496.15
+Llava-Video-32B,64,0.7,1,3244.05
+Llava-Video-32B,85,1.0,1,6102.58
+Llava-Video-32B,85,0.3,1,2372.43
+Llava-Video-32B,85,0.5,1,3380.78
+Llava-Video-32B,85,0.7,1,4415.20
+Llava-Video-32B,32,1.0,2,2328.48
+Llava-Video-32B,32,0.3,2,976.63
+Llava-Video-32B,32,0.5,2,1375.00
+Llava-Video-32B,32,0.7,2,1800.41
+Llava-Video-32B,64,1.0,2,4875.98
+Llava-Video-32B,64,0.3,2,1886.05
+Llava-Video-32B,64,0.5,2,2697.06
+Llava-Video-32B,64,0.7,2,3497.02
+Llava-Video-32B,128,1.0,2,10435.84
+Llava-Video-32B,128,0.3,2,3751.30
+Llava-Video-32B,128,0.5,2,5522.17
+Llava-Video-32B,128,0.7,2,7315.20
+Llava-Video-72B,32,1.0,4,5378.17
+Llava-Video-72B,32,0.3,4,1982.71
+Llava-Video-72B,32,0.5,4,2939.21
+Llava-Video-72B,32,0.7,4,3875.52
+Llava-Video-72B,64,1.0,4,11143.49
+Llava-Video-72B,64,0.3,4,3879.13
+Llava-Video-72B,64,0.5,4,5833.23
+Llava-Video-72B,64,0.7,4,7844.65
+Llava-Video-72B,128,1.0,4,24510.41
+Llava-Video-72B,128,0.3,4,7760.40
+Llava-Video-72B,128,0.5,4,12093.20
+Llava-Video-72B,128,0.7,4,16827.84
+Llava-Video-72B,256,1.0,4,55913.13
+Llava-Video-72B,256,0.3,4,15609.24`;
+
+  const lines = csvData.split('\n');
+  const headers = lines[0].split(',');
+  
+  runtimeData = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',');
+    if (values.length === headers.length) {
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header.trim()] = values[index].trim();
+      });
+      runtimeData.push(row);
+    }
+  }
+}
+
+function updateRuntimeChart() {
+  const selectedModel = document.getElementById('runtimeModelSelect').value;
+  const selectedCost = parseFloat(document.getElementById('runtimeCostSelect').value);
+  
+  // Determine GPU count based on model and cost combination
+  let selectedGpu = 1; // Default
+  if (selectedModel === 'Llava-Video-72B') {
+    selectedGpu = 4; // Llava-Video-72B always uses 4 GPUs
+  } else if (selectedModel === 'Llava-Video-32B') {
+    // For Llava-Video-32B, check if 2 GPU data exists for the selected cost
+    const has2GpuData = runtimeData.some(row => 
+      row.Model === selectedModel && 
+      parseFloat(row.cost) === selectedCost && 
+      parseInt(row['num GPU']) === 2
+    );
+    if (has2GpuData) {
+      selectedGpu = 2;
+    } else {
+      selectedGpu = 1;
+    }
+  }
+  // Llava-Video-7B always uses 1 GPU
+  
+  // Filter data for selected model and GPU count
+  const filteredData = runtimeData.filter(row => 
+    row.Model === selectedModel && 
+    parseInt(row['num GPU']) === selectedGpu
+  );
+  
+  // Get unique frame counts
+  const allFrameCounts = [...new Set(filteredData.map(row => parseInt(row.n_frames)))].sort((a, b) => a - b);
+  
+  // Filter frame counts to only include those with complete data (both selected cost and full cost)
+  const frameCounts = allFrameCounts.filter(frames => {
+    const hasSelectedCost = filteredData.some(row => 
+      parseInt(row.n_frames) === frames && 
+      parseFloat(row.cost) === selectedCost
+    );
+    const hasFullCost = filteredData.some(row => 
+      parseInt(row.n_frames) === frames && 
+      parseFloat(row.cost) === 1.0
+    );
+    return hasSelectedCost && hasFullCost;
+  });
+  
+  // Prepare chart data
+  const labels = frameCounts.map(frames => `${frames} frames`);
+  const selectedCostData = [];
+  const fullCostData = [];
+  
+  frameCounts.forEach(frames => {
+    const selectedCostRow = filteredData.find(row => 
+      parseInt(row.n_frames) === frames && 
+      parseFloat(row.cost) === selectedCost
+    );
+    const fullCostRow = filteredData.find(row => 
+      parseInt(row.n_frames) === frames && 
+      parseFloat(row.cost) === 1.0
+    );
+    
+    selectedCostData.push(parseFloat(selectedCostRow['Prefill time']));
+    fullCostData.push(parseFloat(fullCostRow['Prefill time']));
+  });
+  
+  // Calculate speedup statistics
+  const speedups = selectedCostData.map((selected, index) => 
+    fullCostData[index] > 0 ? fullCostData[index] / selected : 0
+  ).filter(speedup => speedup > 0);
+  
+  const avgSpeedup = speedups.length > 0 ? speedups.reduce((a, b) => a + b, 0) / speedups.length : 0;
+  const maxSpeedup = speedups.length > 0 ? Math.max(...speedups) : 0;
+  const minSpeedup = speedups.length > 0 ? Math.min(...speedups) : 0;
+  
+  // Update speedup summary
+  updateSpeedupSummary(avgSpeedup, maxSpeedup, minSpeedup, selectedCost);
+  
+  // Create or update chart
+  const ctx = document.getElementById('runtimeChart');
+  if (runtimeChart) {
+    runtimeChart.destroy();
+  }
+  
+  runtimeChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: `FrameFusion (${selectedCost * 100}% cost)`,
+          data: selectedCostData,
+          backgroundColor: 'rgba(50, 115, 220, 0.8)',
+          borderColor: 'rgba(50, 115, 220, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Original (100% cost)',
+          data: fullCostData,
+          backgroundColor: 'rgba(128, 128, 128, 0.8)',
+          borderColor: 'rgba(128, 128, 128, 1)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `Runtime Comparison: ${selectedModel} (${selectedGpu} GPU${selectedGpu > 1 ? 's' : ''})`,
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
+        },
+        legend: {
+          display: true,
+          position: 'top'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.dataset.label}: ${context.parsed.y.toFixed(2)} ms`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Prefill Time (ms)'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Number of Frames'
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateSpeedupSummary(avgSpeedup, maxSpeedup, minSpeedup, selectedCost) {
+  const summaryDiv = document.getElementById('speedupSummary');
+  summaryDiv.innerHTML = `
+    <div class="speedup-stats">
+      <div class="speedup-stat">
+        <div class="value">${avgSpeedup.toFixed(2)}×</div>
+        <div class="label">Average Speedup</div>
+      </div>
+      <div class="speedup-stat">
+        <div class="value">${maxSpeedup.toFixed(2)}×</div>
+        <div class="label">Maximum Speedup</div>
+      </div>
+      <div class="speedup-stat">
+        <div class="value">${minSpeedup.toFixed(2)}×</div>
+        <div class="label">Minimum Speedup</div>
+      </div>
+      <div class="speedup-stat">
+        <div class="value">${(selectedCost * 100).toFixed(0)}%</div>
+        <div class="label">Token Budget</div>
+      </div>
+    </div>
+  `;
 }
