@@ -375,6 +375,112 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3">Results</h2>
 
+    <!-- Interactive Performance Table -->
+    <div class="content">
+        <div class="performance-section-header">
+          <h3 class="title is-4">Performance Comparison</h3>
+          <p>Performance comparison across models, methods, and benchmarks at 30% token budget</p>
+        </div>
+        
+        <!-- Filter Controls -->
+        <div class="performance-controls">
+          <div class="filters-wrapper">
+            <div class="filter-item">
+              <label class="filter-label">Model Family</label>
+              <div class="custom-select">
+                <select id="modelFilter">
+                  <option value="">All Models</option>
+                  <option value="Llava-Video">Llava-Video</option>
+                  <option value="NVILA">NVILA</option>
+                  <option value="MiniCPM-V">MiniCPM-V</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="filter-item">
+              <label class="filter-label">Model Size</label>
+              <div class="custom-select">
+                <select id="sizeFilter" disabled>
+                  <option value="">Select a model family first</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="filter-item">
+              <button class="button is-primary" onclick="resetTable()">
+                <span class="icon">
+                  <i class="fas fa-undo"></i>
+                </span>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Performance Table -->
+        <div class="modern-table-wrapper">
+          <div class="table-container">
+            <table id="performanceTable" class="modern-table">
+              <thead>
+                <tr>
+                  <th onclick="sortTable(0)" class="sortable sticky-col">
+                    Model <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="sortTable(1)" class="sortable sticky-col">
+                    Size <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="sortTable(2)" class="sortable sticky-col">
+                    Method <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="toggleBenchmark('videoniah')" class="benchmark-header" id="videoniah-header">
+                    VideoNIAH <i class="fas fa-chevron-right expand-icon"></i>
+                  </th>
+                  <th class="benchmark-sub videoniah-sub" onclick="sortTable(3)" style="display: none;">
+                    Edit <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th class="benchmark-sub videoniah-sub" onclick="sortTable(4)" style="display: none;">
+                    Insert1 <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th class="benchmark-sub videoniah-sub" onclick="sortTable(5)" style="display: none;">
+                    Insert2 <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="toggleBenchmark('nextqa')" class="benchmark-header" id="nextqa-header">
+                    NExT-QA <i class="fas fa-chevron-right expand-icon"></i>
+                  </th>
+                  <th class="benchmark-sub nextqa-sub" onclick="sortTable(6)" style="display: none;">
+                    MC <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th class="benchmark-sub nextqa-sub" onclick="sortTable(7)" style="display: none;">
+                    OE <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="toggleBenchmark('videomme')" class="benchmark-header" id="videomme-header">
+                    VideoMME <i class="fas fa-chevron-right expand-icon"></i>
+                  </th>
+                  <th class="benchmark-sub videomme-sub" onclick="sortTable(8)" style="display: none;">
+                    w/o sub. <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th class="benchmark-sub videomme-sub" onclick="sortTable(9)" style="display: none;">
+                    w/ sub. <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="sortTable(10)" class="sortable">
+                    EgoSchema <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="sortTable(11)" class="sortable">
+                    MVBench <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                  <th onclick="sortTable(12)" class="sortable average-col">
+                    Average <span class="sort-icon"><i class="fas fa-sort-up"></i><i class="fas fa-sort-down"></i></span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="performanceTableBody">
+                <!-- Table content will be loaded dynamically from CSV -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     <!-- Performance vs Budget -->
     <div class="content">
       <h3 class="title is-4">Performance vs. Token Budget</h3>
@@ -519,4 +625,4 @@
 </footer>
 
 </body>
-</html>
+</html> 
