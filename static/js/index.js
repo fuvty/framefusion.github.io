@@ -10,7 +10,7 @@ $(document).ready(function() {
     });
 
     // Initialize Carousel
-    bulmaCarousel.attach('#results-carousel', {
+    const carousel = bulmaCarousel.attach('#results-carousel', {
       slidesToScroll: 1,
       slidesToShow: 1,
       infinite: true,
@@ -18,6 +18,14 @@ $(document).ready(function() {
       navigation: true,
       gap: 60
     });
+
+    // Add carousel slide change event listener
+    if (carousel && carousel.length > 0) {
+      carousel[0].on('slide:change', function() {
+        // Reset and restart loading animation when slide changes
+        resetCarouselLoading();
+      });
+    }
 
     // Initialize slider
     const slider = document.getElementById('interpolation-slider');
@@ -58,6 +66,9 @@ $(document).ready(function() {
       // Set playback rate to complete in 10 seconds (66 frames at 1fps = 6.6x speed)
       video.playbackRate = 6.6;
     });
+
+    // Initialize carousel answer loading animations
+    initializeCarouselLoading();
 
     // Interactive Performance Table functionality
     initializePerformanceTable();
@@ -511,5 +522,219 @@ function resetTable() {
                 setTimeout(() => row.classList.remove('performance-highlight'), 1000);
             }, index * 30);
         });
+    }, 100);
+}
+
+// Carousel loading animation functionality
+function initializeCarouselLoading() {
+    // First, ensure all loading elements are visible and content is hidden
+    for (let i = 0; i < 3; i++) {
+        const originalLoading = document.getElementById(`original-loading-${i}`);
+        const originalContent = document.getElementById(`original-content-${i}`);
+        const framefusionLoading = document.getElementById(`framefusion-loading-${i}`);
+        const framefusionContent = document.getElementById(`framefusion-content-${i}`);
+        const originalTimer = document.getElementById(`original-time-${i}`);
+        const framefusionTimer = document.getElementById(`framefusion-time-${i}`);
+        
+        if (originalLoading) originalLoading.style.display = 'flex';
+        if (originalContent) {
+            originalContent.style.display = 'none';
+            originalContent.classList.remove('loaded');
+        }
+        if (framefusionLoading) framefusionLoading.style.display = 'flex';
+        if (framefusionContent) {
+            framefusionContent.style.display = 'none';
+            framefusionContent.classList.remove('loaded');
+        }
+        
+        // Reset timers
+        if (originalTimer) originalTimer.textContent = '0.0s';
+        if (framefusionTimer) framefusionTimer.textContent = '0.0s';
+        
+        // Reset progress bars
+        const originalProgress = originalLoading?.querySelector('.loading-progress-bar');
+        const framefusionProgress = framefusionLoading?.querySelector('.loading-progress-bar');
+        if (originalProgress) {
+            originalProgress.style.width = '0%';
+            originalProgress.style.transition = 'none';
+        }
+        if (framefusionProgress) {
+            framefusionProgress.style.width = '0%';
+            framefusionProgress.style.transition = 'none';
+        }
+    }
+
+    // Token counts for each carousel item (Original, FrameFusion)
+    const tokenData = [
+        { original: 13440, framefusion: 4032 },
+        { original: 10290, framefusion: 3087 },
+        { original: 9870, framefusion: 2961 }
+    ];
+
+    // Base timing constants
+    const BASE_DELAY = 500; // Base delay before starting (same for both)
+    const TOKEN_FACTOR = 0.25; // Milliseconds per token (increased for more noticeable difference)
+    const MIN_DELAY = 500; // Minimum delay in milliseconds
+    const MAX_DELAY = 4000; // Maximum delay in milliseconds
+
+    // Calculate delays for each carousel item
+    tokenData.forEach((tokens, index) => {
+        // Calculate proportional delays based on token count
+        const originalDelay = Math.min(Math.max(tokens.original * TOKEN_FACTOR, MIN_DELAY), MAX_DELAY);
+        const framefusionDelay = Math.min(Math.max(tokens.framefusion * TOKEN_FACTOR, MIN_DELAY), MAX_DELAY);
+
+        // Log the timing for debugging
+        console.log(`Carousel ${index}: Original ${tokens.original} tokens = ${originalDelay}ms, FrameFusion ${tokens.framefusion} tokens = ${framefusionDelay}ms`);
+
+        // Start both animations at the same time (after BASE_DELAY)
+        setTimeout(() => {
+            // Animate progress bar for Original
+            animateProgressBar(`original-loading-${index}`, originalDelay);
+            
+            // Animate progress bar for FrameFusion
+            animateProgressBar(`framefusion-loading-${index}`, framefusionDelay);
+            
+            // Start timers for both
+            startTimer(`original-time-${index}`, originalDelay);
+            startTimer(`framefusion-time-${index}`, framefusionDelay);
+        }, BASE_DELAY);
+
+        // Complete Original loading after its delay
+        setTimeout(() => {
+            const loadingElement = document.getElementById(`original-loading-${index}`);
+            const contentElement = document.getElementById(`original-content-${index}`);
+            
+            if (loadingElement && contentElement) {
+                // Hide loading, show content
+                loadingElement.style.display = 'none';
+                contentElement.style.display = 'flex';
+                contentElement.classList.add('loaded');
+            }
+        }, BASE_DELAY + originalDelay);
+
+        // Complete FrameFusion loading after its delay (much shorter)
+        setTimeout(() => {
+            const loadingElement = document.getElementById(`framefusion-loading-${index}`);
+            const contentElement = document.getElementById(`framefusion-content-${index}`);
+            
+            if (loadingElement && contentElement) {
+                // Hide loading, show content
+                loadingElement.style.display = 'none';
+                contentElement.style.display = 'flex';
+                contentElement.classList.add('loaded');
+            }
+        }, BASE_DELAY + framefusionDelay);
+    });
+
+    // Reset animation when carousel slides change
+    const carousel = document.getElementById('results-carousel');
+    if (carousel) {
+        // Listen for carousel slide changes (if bulma carousel provides events)
+        // For now, we'll reset on any interaction
+        carousel.addEventListener('click', () => {
+            // Reset all loading states
+            resetCarouselLoading();
+        });
+    }
+}
+
+function animateProgressBar(loadingId, duration) {
+    const loadingElement = document.getElementById(loadingId);
+    if (!loadingElement) return;
+
+    const progressBar = loadingElement.querySelector('.loading-progress-bar');
+    if (!progressBar) return;
+
+    // Reset progress bar
+    progressBar.style.width = '0%';
+    progressBar.style.transition = 'none';
+
+    // Force reflow to ensure the reset takes effect
+    progressBar.offsetHeight;
+
+    // Start progress animation immediately
+    progressBar.style.transition = `width ${duration}ms linear`;
+    progressBar.style.width = '100%';
+}
+
+function startTimer(timerId, duration) {
+    const timerElement = document.getElementById(timerId);
+    if (!timerElement) return;
+
+    const startTime = Date.now();
+    const endTime = startTime + duration;
+    
+    // Store interval ID for cleanup
+    const intervalId = setInterval(() => {
+        const currentTime = Date.now();
+        const elapsed = (currentTime - startTime) / 1000;
+        
+        if (currentTime >= endTime) {
+            timerElement.textContent = `${(duration / 1000).toFixed(1)}s`;
+            clearInterval(intervalId);
+        } else {
+            timerElement.textContent = `${elapsed.toFixed(1)}s`;
+        }
+    }, 100);
+    
+    // Store interval ID for cleanup during reset
+    timerElement.dataset.intervalId = intervalId;
+}
+
+function resetCarouselLoading() {
+    // Reset all loading and content elements
+    for (let i = 0; i < 3; i++) {
+        const originalLoading = document.getElementById(`original-loading-${i}`);
+        const originalContent = document.getElementById(`original-content-${i}`);
+        const framefusionLoading = document.getElementById(`framefusion-loading-${i}`);
+        const framefusionContent = document.getElementById(`framefusion-content-${i}`);
+        const originalTimer = document.getElementById(`original-time-${i}`);
+        const framefusionTimer = document.getElementById(`framefusion-time-${i}`);
+
+        if (originalLoading && originalContent) {
+            originalLoading.style.display = 'flex';
+            originalContent.style.display = 'none';
+            originalContent.classList.remove('loaded');
+            
+            // Reset progress bar
+            const originalProgress = originalLoading.querySelector('.loading-progress-bar');
+            if (originalProgress) {
+                originalProgress.style.width = '0%';
+                originalProgress.style.transition = 'none';
+            }
+        }
+
+        if (framefusionLoading && framefusionContent) {
+            framefusionLoading.style.display = 'flex';
+            framefusionContent.style.display = 'none';
+            framefusionContent.classList.remove('loaded');
+            
+            // Reset progress bar
+            const framefusionProgress = framefusionLoading.querySelector('.loading-progress-bar');
+            if (framefusionProgress) {
+                framefusionProgress.style.width = '0%';
+                framefusionProgress.style.transition = 'none';
+            }
+        }
+
+        // Clear and reset timers
+        if (originalTimer) {
+            if (originalTimer.dataset.intervalId) {
+                clearInterval(originalTimer.dataset.intervalId);
+            }
+            originalTimer.textContent = '0.0s';
+        }
+
+        if (framefusionTimer) {
+            if (framefusionTimer.dataset.intervalId) {
+                clearInterval(framefusionTimer.dataset.intervalId);
+            }
+            framefusionTimer.textContent = '0.0s';
+        }
+    }
+
+    // Re-initialize after a short delay
+    setTimeout(() => {
+        initializeCarouselLoading();
     }, 100);
 }
