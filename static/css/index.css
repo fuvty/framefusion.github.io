@@ -231,6 +231,39 @@ body {
   margin-top: 1rem;
 }
 
+/* Demo Video Section Styles */
+.video-container {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.demo-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+.video-container:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+/* Responsive video sizing */
+@media (max-width: 768px) {
+  .video-container {
+    border-radius: 8px;
+  }
+  
+  .demo-video {
+    border-radius: 8px;
+  }
+}
+
 .interpolation-panel {
   padding: 20px;
   background: #f5f5f5;
