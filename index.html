@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models">
+        content="FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Vision Language Models">
   <meta name="keywords" content="Vision Language Models, Token Reduction, Video Understanding">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FrameFusion: Efficient Token Reduction for Vision-Language Models</title>
+  <title>thu-nics/FrameFusion</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
+  <link rel="icon" href="./static/images/transparant_logo.png">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
@@ -35,80 +35,269 @@
 </head>
 <body>
 
+<!-- Global Navigation -->
+<nav class="nav-global" id="navGlobal">
+  <div class="nav-global-content">
+    <a href="https://github.com/thu-nics">
+      <img src="./static/images/page_logo.png" alt="NICS-EFC" class="nav-global-logo">
+    </a>
+    <div class="nav-global-links">
+      <a href="https://fuvty.github.io/R2R_Project_Page/">R2R</a>
+      <a href="https://fuvty.github.io/TaH_Webpage/">TaH</a>
+      <a href="https://fuvty.github.io/C2C_Project_Page/">C2C</a>
+      <a href="https://thu-nics.github.io/FrameFusion_Project_Page/" class="active">FrameFusion</a>
+      <a href="https://github.com/thu-nics/MoA">MoA</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Local Navigation -->
+<nav class="nav" id="navLocal">
+  <div class="nav-content">
+    <div class="nav-logo-wrapper" id="navLogoWrapper">
+      <a href="https://thu-nics.github.io/FrameFusion_Project_Page/" class="nav-logo">
+        FrameFusion
+        <i class="fas fa-chevron-down nav-logo-chevron"></i>
+      </a>
+      <div class="nav-dropdown">
+        <div class="nav-dropdown-title">Explore Projects</div>
+        <div class="nav-dropdown-grid">
+          <a href="https://fuvty.github.io/R2R_Project_Page/" class="nav-dropdown-item">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/R2R/main/resource/logo.png" alt="R2R">
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">R2R</div>
+              <div class="nav-dropdown-desc">Token-level routing for reasoning LLMs</div>
+            </div>
+          </a>
+          <a href="https://fuvty.github.io/TaH_Webpage/" class="nav-dropdown-item">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/TaH/main/resource/logo.png" alt="TaH">
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">TaH</div>
+              <div class="nav-dropdown-desc">Selective latent thinking for reasoning LLMs</div>
+            </div>
+          </a>
+          <a href="https://fuvty.github.io/C2C_Project_Page/" class="nav-dropdown-item">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/C2C/main/resource/logo.png" alt="C2C">
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">C2C</div>
+              <div class="nav-dropdown-desc">Communicate through KV-Cache between LLMs</div>
+            </div>
+          </a>
+          <a href="https://thu-nics.github.io/FrameFusion_Project_Page/" class="nav-dropdown-item active">
+            <div class="nav-dropdown-icon">
+              <img src="./static/images/transparant_logo.png" alt="FrameFusion">
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">FrameFusion</div>
+              <div class="nav-dropdown-desc">Video token reduction for LVLMs</div>
+            </div>
+          </a>
+          <a href="https://github.com/thu-nics/MoA" class="nav-dropdown-item">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/MoA/master/resource/logo.png" alt="MoA">
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">MoA</div>
+              <div class="nav-dropdown-desc">Mixture of sparse attention for LLMs</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="#overview">Idea</a>
+      <a href="#observations">Observations</a>
+      <a href="#examples">Examples</a>
+      <a href="#results">Results</a>
+      <a href="#bibtex">BibTeX</a>
+      <a href="https://github.com/thu-nics/FrameFusion" class="nav-cta">
+        <i class="fab fa-github"></i> GitHub
+      </a>
+    </div>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
 <section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <div class="columns is-centered is-vcentered">
-            <div class="column is-2">
-              <img src="./static/images/logo.jpeg" alt="Logo" class="logo-image">
-            </div>
-            <div class="column">
-              <h1 class="title is-1 publication-title">FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models</h1>
-            </div>
+  <div class="hero-content">
+    <h1 class="hero-title"><span>FrameFusion</span></h1>
+    <p class="hero-subtitle">
+      Combining similarity and importance for video token reduction on large vision-language models.
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-value">70%</div>
+        <div class="stat-label">Visual Tokens Reduced</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">1.6-3.6x</div>
+        <div class="stat-label">End-to-End Speedup</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">&lt;3%</div>
+        <div class="stat-label">Avg. Performance Impact</div>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <div class="hero-actions">
+        <a href="https://arxiv.org/pdf/2501.01986" class="btn btn-primary">
+          <i class="fas fa-file-pdf"></i> Read Paper
+        </a>
+        <a href="https://github.com/thu-nics/FrameFusion" class="btn btn-secondary">
+          <i class="fab fa-github"></i> View Code
+        </a>
+        <span class="hero-badge">
+          <i class="fas fa-award"></i> ICCV 2025
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-gray" id="overview">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Core Idea</p>
+      <h2 class="section-title">Keep visual tokens that are important and unique.</h2>
+      <p class="section-subtitle">
+        Importance answers which tokens matter. Similarity answers which of those tokens are redundant.
+        FrameFusion uses both signals instead of treating pruning as the only compression tool.
+      </p>
+    </div>
+
+    <div class="idea-flow reveal">
+      <div class="idea-card prune">
+        <div class="idea-icon"><i class="fas fa-minus"></i></div>
+        <p class="idea-label">Unimportant</p>
+        <h3>Prune</h3>
+        <p>Tokens with low cumulative attention are removed under the compute budget.</p>
+      </div>
+      <div class="idea-card merge">
+        <div class="idea-icon"><i class="fas fa-compress-arrows-alt"></i></div>
+        <p class="idea-label">Important + Similar</p>
+        <h3>Merge</h3>
+        <p>Redundant adjacent-frame tokens are averaged, preserving visual meaning while reducing length.</p>
+      </div>
+      <div class="idea-card keep">
+        <div class="idea-icon"><i class="fas fa-check"></i></div>
+        <p class="idea-label">Important + Unique</p>
+        <h3>Keep</h3>
+        <p>Distinct tokens survive to carry scene details, temporal events, and task-relevant evidence.</p>
+      </div>
+    </div>
+
+    <div class="method-panel reveal">
+      <img src="./static/images/method_detail.png" alt="FrameFusion method overview" class="method-figure">
+      <p class="figure-caption">
+        FrameFusion first merges tokens with similarities above a threshold at shallow layers, then applies top-k importance pruning to meet the target token budget.
+      </p>
+    </div>
+
+    <div class="stage-grid reveal">
+      <div class="stage-card">
+        <span class="stage-number">01</span>
+        <h3>Merging Stage</h3>
+        <p>
+          Corresponding visual tokens from adjacent frames are compared with cosine similarity. Highly similar tokens are grouped and averaged across successive shallow layers.
+        </p>
+      </div>
+      <div class="stage-card">
+        <span class="stage-number">02</span>
+        <h3>Pruning Stage</h3>
+        <p>
+          After redundant tokens are fused, FrameFusion uses cumulative attention scores to retain the most important remaining tokens within the compute budget.
+        </p>
+      </div>
+      <div class="stage-card">
+        <span class="stage-number">03</span>
+        <h3>Cascaded Reduction</h3>
+        <p>
+          Tokens are permanently reduced for later layers, so both attention and feed-forward computation become cheaper as inference proceeds.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section section-dark" id="observations">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Observations</p>
+      <h2 class="section-title">Why merging works for video tokens.</h2>
+    </div>
+
+    <div class="columns equal-height-columns reveal">
+      <!-- Observation 1 -->
+      <div class="column">
+        <div class="content observation-content">
+          <h3 class="title is-4">Observation 1:<br>Adjacent Similarity</h3>
+          <div class="observation-image-container">
+            <img src="./static/images/token_similarity.png" alt="Token similarity between frames">
           </div>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a>Tianyu Fu</a><sup>1,2*</sup>,</span>
-            <span class="author-block">
-              <a>Tengxuan Liu</a><sup>1,2*</sup>,</span>
-            <span class="author-block">
-              <a>Qinghao Han</a><sup>3*</sup>,</span>
-            <span class="author-block">
-              <a>Guohao Dai</a><sup>4,2</sup>,</span>
-            <span class="author-block">
-              <a>Shengen Yan</a><sup>2</sup>,</span>
-            <span class="author-block">
-              <a>Huazhong Yang</a><sup>1</sup>,</span>
-            <span class="author-block">
-              <a>Xuefei Ning</a><sup>1</sup>,</span>
-            <span class="author-block">
-              <a>Yu Wang</a><sup>1</sup>
+          <div class="observation-text">
+            <p>High similarity between adjacent frames</p>
+          </div>
+          <div class="observation-arrow">
+            <span class="icon has-text-info">
+              <i class="fas fa-arrow-down"></i>
             </span>
           </div>
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Tsinghua University,</span>
-            <span class="author-block"><sup>2</sup>Infinigence-AI,</span>
-            <span class="author-block"><sup>3</sup>Peking University,</span>
-            <span class="author-block"><sup>4</sup>Shanghai Jiao Tong University</span>
-            <br>
-            <span class="author-block"><sup>*</sup>Equal contribution</span>
+          <div class="observation-design">
+            <p><strong>Design Choice:</strong> O(N) adjacent-only computation</p>
           </div>
+        </div>
+      </div>
 
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/2501.01986"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2501.01986"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/thu-nics/FrameFusion"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-            </div>
+      <!-- Observation 2 -->
+      <div class="column">
+        <div class="content observation-content">
+          <h3 class="title is-4">Observation 2:<br>Layer-wise Distribution</h3>
+          <div class="observation-image-container">
+            <img src="./static/images/similarity_distribution.png" alt="Token similarity distribution across layers">
+          </div>
+          <div class="observation-text">
+            <p>Token similarity distribution condenses as layers deepen</p>
+          </div>
+          <div class="observation-arrow">
+            <span class="icon has-text-info">
+              <i class="fas fa-arrow-down"></i>
+            </span>
+          </div>
+          <div class="observation-design">
+            <p><strong>Design Choice:</strong> Apply merging at shallow layers</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observation 3 -->
+      <div class="column">
+        <div class="content observation-content">
+          <h3 class="title is-4">Observation 3:<br>Ranking Consistency</h3>
+          <div class="observation-image-container">
+            <img src="./static/images/spearman_rank_correlation.png" alt="Similarity ranking consistency">
+          </div>
+          <div class="observation-text">
+            <p>High similarity ranking consistency across layers</p>
+          </div>
+          <div class="observation-arrow">
+            <span class="icon has-text-info">
+              <i class="fas fa-arrow-down"></i>
+            </span>
+          </div>
+          <div class="observation-design">
+            <p><strong>Design Choice:</strong> Cascaded merging strategy</p>
           </div>
         </div>
       </div>
@@ -116,25 +305,18 @@
   </div>
 </section>
 
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img src="./static/images/illustration.png" alt="FrameFusion Overview">
-      <h2 class="subtitle has-text-centered">
-        <span class="framefusion">FrameFusion</span> reduces vision tokens by 70% in video LVLMs, achieving 1.6-3.6× end-to-end speedup with <3% accuracy drop.
-      </h2>
-    </div>
-  </div>
-</section>
 
-
-
-
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <!-- <h2 class="title is-3 has-text-centered">Example Results</h2> -->
-      <div id="results-carousel" class="carousel results-carousel">
+<section class="section examples-section" id="examples">
+  <div class="container container-wide">
+    <div class="examples-body">
+      <div class="section-header section-header-centered reveal">
+        <p class="section-eyebrow">Interactive Examples</p>
+        <h2 class="section-title">Same answers with fewer visual tokens.</h2>
+        <p class="section-subtitle">
+          The original page interaction is preserved: compare dense inference with FrameFusion as the token counts and response timing change.
+        </p>
+      </div>
+      <div id="results-carousel" class="carousel results-carousel reveal">
         <!-- Example 0: Tom and Jerry -->
         <div class="item">
           <div class="card">
@@ -297,149 +479,42 @@
 </section>
 
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            The increasing demand to process long and high-resolution videos significantly burdens Large Vision-Language Models (LVLMs) due to the enormous number of visual tokens.
-            Existing token reduction methods primarily focus on importance-based token pruning, which overlooks the redundancy caused by frame resemblance and repetitive visual elements.
-          </p>
-          <p>
-            We analyze the high vision token similarities in LVLMs and reveal that token similarity distribution condenses as layers deepen while maintaining ranking consistency.
-            Leveraging the unique properties of similarity over importance, we introduce <span class="framefusion">FrameFusion</span>, a novel approach that combines similarity-based merging with importance-based pruning for better token reduction in LVLMs.
-          </p>
-          <p>
-            Experiments show that <span class="framefusion">FrameFusion</span> reduces vision tokens by 70%, achieving 1.6 – 3.6× end-to-end speedups, with an average performance impact of less than 3%.
-          </p>
+<section class="section section-gray" id="results">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Experiments</p>
+      <h2 class="section-title">Benchmark and runtime results.</h2>
+      <p class="section-subtitle">FrameFusion reduces video tokens aggressively while preserving benchmark accuracy and improving latency.</p>
+    </div>
+
+    <div class="results-summary reveal">
+      <div class="summary-title">FrameFusion Performance Summary</div>
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <div class="summary-value">70%</div>
+          <div class="summary-label">Visual Tokens Reduced</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-value">1.6-3.6x</div>
+          <div class="summary-label">End-to-End Speedup</div>
+        </div>
+        <div class="summary-stat">
+          <div class="summary-value">&lt;3%</div>
+          <div class="summary-label">Avg. Performance Impact</div>
         </div>
       </div>
     </div>
-    <!--/ Abstract. -->
-
-    <!-- Method Overview -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Method Overview</h2>
-        
-        <!-- Method figure -->
-        <div class="columns is-centered">
-          <div class="column is-10">
-            <img src="./static/images/method_detail.png" alt="Method Overview" class="method-figure">
-            <p class="caption">
-              FrameFusion first merges tokens with similarities above a specified threshold at shallow layers, then applies top-k importance pruning to comply with the given computational constraints.
-            </p>
-          </div>
-        </div>
-
-        <div class="content">
-          <h3 class="title is-4">Two-Stage Token Compression</h3>
-          <p>
-            The core concept of FrameFusion is to combine similarity-based merging with importance-based pruning. Unlike traditional methods that primarily employ importance-based token pruning, FrameFusion emphasizes similarity-based token merging, retaining only tokens that are both important and unique.
-          </p>
-
-          <h4 class="title is-5">Merging Stage</h4>
-          <p>
-            In the initial merging stage, FrameFusion utilizes token similarity to merge vision tokens. It computes token similarities between corresponding vision tokens of adjacent frames. Tokens exceeding the similarity threshold are grouped with their analogous tokens from the previous frame. Within each group, FrameFusion performs element-wise averaging of all tokens.
-          </p>
-          <p>
-            The merging stage is applied across successive shallow LLM layers to progressively merge similar tokens, until the number of similar tokens falls below a threshold. After the merging stage, the remaining unique tokens advance to the pruning stage.
-          </p>
-
-          <h4 class="title is-5">Pruning Stage</h4>
-          <p>
-            After merging, FrameFusion further prunes unimportant tokens using cumulative attention scores. Based on a user-defined computational cost budget, it calculates the maximum number of remaining tokens that fits within the budget, then applies top-k importance pruning to retain only the important tokens from the remaining unique ones.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Method Overview -->
-
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3">Key Observations & Design</h2>
-    
-    <div class="columns equal-height-columns">
-      <!-- Observation 1 -->
-      <div class="column">
-        <div class="content observation-content">
-          <h3 class="title is-4">Observation 1:<br>Adjacent Similarity</h3>
-          <div class="observation-image-container">
-            <img src="./static/images/token_similarity.png" alt="Token similarity between frames">
-          </div>
-          <div class="observation-text">
-            <p>High similarity between adjacent frames</p>
-          </div>
-          <div class="observation-arrow">
-            <span class="icon has-text-info">
-              <i class="fas fa-arrow-down"></i>
-            </span>
-          </div>
-          <div class="observation-design">
-            <p><strong>Design Choice:</strong> O(N) adjacent-only computation</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Observation 2 -->
-      <div class="column">
-        <div class="content observation-content">
-          <h3 class="title is-4">Observation 2:<br>Layer-wise Distribution</h3>
-          <div class="observation-image-container">
-            <img src="./static/images/similarity_distribution.png" alt="Token similarity distribution across layers">
-          </div>
-          <div class="observation-text">
-            <p>Token similarity distribution condenses as layers deepen</p>
-          </div>
-          <div class="observation-arrow">
-            <span class="icon has-text-info">
-              <i class="fas fa-arrow-down"></i>
-            </span>
-          </div>
-          <div class="observation-design">
-            <p><strong>Design Choice:</strong> Apply merging at shallow layers</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Observation 3 -->
-      <div class="column">
-        <div class="content observation-content">
-          <h3 class="title is-4">Observation 3:<br>Ranking Consistency</h3>
-          <div class="observation-image-container">
-            <img src="./static/images/spearman_rank_correlation.png" alt="Similarity ranking consistency">
-          </div>
-          <div class="observation-text">
-            <p>High similarity ranking consistency across layers</p>
-          </div>
-          <div class="observation-arrow">
-            <span class="icon has-text-info">
-              <i class="fas fa-arrow-down"></i>
-            </span>
-          </div>
-          <div class="observation-design">
-            <p><strong>Design Choice:</strong> Cascaded merging strategy</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3">Results</h2>
 
     <!-- Demo Video -->
-    <div class="content">
+    <div class="expandable-section reveal">
+      <div class="expandable-header" onclick="toggleExpand(this)">
+        <span class="expandable-title">View Demo Video</span>
+        <div class="expandable-icon"><i class="fas fa-plus"></i></div>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <div class="expandable-inner">
+            <div class="content">
         <h3 class="title is-4">Demo Video</h3>
         <p>Watch FrameFusion in action: See how our method efficiently processes video content while maintaining visual quality.</p>
         
@@ -455,9 +530,21 @@
             </div>
         </div>
     </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Interactive Performance Table -->
-    <div class="content">
+    <div class="expandable-section reveal">
+      <div class="expandable-header" onclick="toggleExpand(this)">
+        <span class="expandable-title">View Detailed Benchmark Results</span>
+        <div class="expandable-icon"><i class="fas fa-plus"></i></div>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <div class="expandable-inner">
+            <div class="content">
         <div class="performance-section-header">
           <h3 class="title is-4">Performance Comparison</h3>
           <p>Performance comparison across models, methods, and benchmarks at 30% token budget</p>
@@ -561,12 +648,24 @@
           </div>
         </div>
     </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Interactive Runtime Comparison -->
-    <div class="content">
+    <div class="expandable-section reveal">
+      <div class="expandable-header" onclick="toggleExpand(this)">
+        <span class="expandable-title">View Runtime Breakdown</span>
+        <div class="expandable-icon"><i class="fas fa-plus"></i></div>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <div class="expandable-inner">
+            <div class="content">
         <h3 class="title is-4">Runtime Comparison</h3>
         <p>FrameFusion runtime performance with different token budgets and frame counts. Select a model and cost level to see the comparison with the original model. </p>
-        <p><span class="framefusion">FrameFusion</span> achieves 1.6 – 3.6× end-to-end speedup, scaling better with larger models and more frames.</p>
+        <p><span class="framefusion">FrameFusion</span> achieves 1.6-3.6x end-to-end speedup, scaling better with larger models and more frames.</p>
 
         <!-- Controls -->
         <div class="runtime-controls">
@@ -611,6 +710,10 @@
             </div>
         </div>
     </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Performance vs Budget
     <div class="content">
@@ -654,11 +757,14 @@
 </section>
 
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3">Interactive Demo</h2>
+<section class="section" id="demo">
+  <div class="container">
+    <div class="section-header section-header-centered reveal">
+      <p class="section-eyebrow">Interactive Demo</p>
+      <h2 class="section-title">Original frames versus reduced frames.</h2>
+    </div>
 
-    <div class="content has-text-centered">
+    <div class="content has-text-centered reveal">
       <p>
         Compare the original video frames with FrameFusion-processed frames. Use the slider to see how our method maintains visual quality while reducing tokens.
       </p>
@@ -666,7 +772,7 @@
 
     <div class="columns is-centered">
       <div class="column is-10">
-        <div class="columns is-vcentered interpolation-panel">
+        <div class="columns is-vcentered interpolation-panel reveal">
           <div class="column is-3 has-text-centered">
             <img src="./static/images/tom_jerry/frame_60.png"
                  class="interpolation-image"
@@ -691,7 +797,7 @@
       </div>
     </div>
 
-    <div class="content has-text-centered">
+    <div class="content has-text-centered reveal">
       <p>
         Token reduction maintains semantic understanding while significantly reducing computation.
       </p>
@@ -700,43 +806,74 @@
 </section>
 
 
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@article{fu2024framefusion,
-  title     = {FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models},
+<section class="section section-gray authors-section">
+  <div class="container">
+    <div class="section-header section-header-centered reveal">
+      <p class="section-eyebrow">Team</p>
+      <h2 class="section-title">Meet the researchers.</h2>
+    </div>
+    <div class="authors-list reveal">
+      <a href="https://nicsefc.ee.tsinghua.edu.cn/people/TianyuFu" class="author-tag">Tianyu Fu<sup>1,2*</sup></a>
+      <span class="author-tag">Tengxuan Liu<sup>1,2*</sup></span>
+      <span class="author-tag">Qinghao Han<sup>3*</sup></span>
+      <a href="https://dai.sjtu.edu.cn/pepledetail.html?id=218" class="author-tag">Guohao Dai<sup>4,2</sup></a>
+      <span class="author-tag">Shengen Yan<sup>2</sup></span>
+      <span class="author-tag">Huazhong Yang<sup>1</sup></span>
+      <span class="author-tag">Xuefei Ning<sup>1</sup></span>
+      <a href="https://nicsefc.ee.tsinghua.edu.cn/people/YuWang" class="author-tag">Yu Wang<sup>1</sup></a>
+    </div>
+    <p class="affiliations reveal">
+      <sup>1</sup>Tsinghua University &nbsp;&nbsp; <sup>2</sup>Infinigence-AI &nbsp;&nbsp; <sup>3</sup>Peking University &nbsp;&nbsp; <sup>4</sup>Shanghai Jiao Tong University
+      <br>
+      <sup>*</sup>Equal contribution
+    </p>
+  </div>
+</section>
+
+
+<section class="section" id="bibtex">
+  <div class="container content">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Citation</p>
+      <h2 class="section-title">Cite our work.</h2>
+    </div>
+    <div class="bibtex-container reveal">
+      <button class="copy-btn" onclick="copyBibtex()">
+        <i class="fas fa-copy"></i> Copy BibTeX
+      </button>
+      <pre><code id="bibtexCode">@article{fu2025framefusion,
+  title     = {FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Vision Language Models},
   author    = {Fu, Tianyu and Liu, Tengxuan and Han, Qinghao and Dai, Guohao and Yan, Shengen and Yang, Huazhong and Ning, Xuefei and Wang, Yu},
   journal   = {arXiv preprint arXiv:2501.01986},
-  year      = {2024}
+  year      = {2025}
 }</code></pre>
+    </div>
   </div>
 </section>
 
 
 <footer class="footer">
   <div class="container">
-    <div class="content has-text-centered">
+    <div class="footer-social">
       <a class="icon-link" href="https://arxiv.org/pdf/2501.01986">
         <i class="fas fa-file-pdf"></i>
       </a>
-      <a class="icon-link" href="https://github.com/thu-nics/FrameFusion" class="external-link">
+      <a class="icon-link external-link" href="https://github.com/thu-nics/FrameFusion">
         <i class="fab fa-github"></i>
       </a>
     </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            Website template borrowed from <a href="https://nerfies.github.io">Nerfies</a>.
-          </p>
-        </div>
-      </div>
+    <div class="footer-content">
+      <p>FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Vision Language Models.</p>
+      <p>
+        Licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Website template originally borrowed from <a href="https://nerfies.github.io">Nerfies</a>.
+      </p>
     </div>
   </div>
 </footer>
 
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Scroll to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
 </body>
-</html> 
+</html>
