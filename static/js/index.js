@@ -86,6 +86,582 @@ function initializeScrollReveal() {
     window.addEventListener('resize', revealOnScroll);
 }
 
+function initializeFrameFusionHero() {
+    const canvas = document.getElementById('frameFusionHeroCanvas');
+    if (!canvas) return;
+
+    const hero = canvas.closest('.hero');
+    const ctx = canvas.getContext('2d');
+    if (!hero || !ctx) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let width = 0;
+    let height = 0;
+    let frameCount = 0;
+    let gridCols = 0;
+    let gridRows = 0;
+    let running = true;
+    let animationStartTime = performance.now();
+    let activeMergeCycle = -1;
+    let activeMergeLayoutKey = "";
+    let activeMergeCells = [];
+    let mergeRandomBase = Math.floor(Math.random() * 100000);
+
+    function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
+    function smoothstep(edge0, edge1, value) {
+        const t = clamp((value - edge0) / (edge1 - edge0), 0, 1);
+        return t * t * (3 - 2 * t);
+    }
+
+    function easeOutCubic(value) {
+        const t = clamp(value, 0, 1);
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function lerp(start, end, amount) {
+        return start + (end - start) * amount;
+    }
+
+    function lerpPoint(start, end, amount) {
+        return {
+            x: lerp(start.x, end.x, amount),
+            y: lerp(start.y, end.y, amount),
+        };
+    }
+
+    function noise(a, b, c) {
+        const x = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719) * 43758.5453;
+        return x - Math.floor(x);
+    }
+
+    function seededRandom(seed) {
+        const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+        return x - Math.floor(x);
+    }
+
+    function rgba(rgb, alpha) {
+        return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+    }
+
+    function resizeHeroCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = hero.getBoundingClientRect();
+        width = Math.max(1, rect.width);
+        height = Math.max(1, rect.height);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        frameCount = width < 720 ? 10 : 16;
+        gridCols = width < 720 ? 4 : 5;
+        gridRows = width < 720 ? 3 : 4;
+        activeMergeCycle = -1;
+        activeMergeLayoutKey = "";
+
+        if (reducedMotion) drawHeroFrame(animationStartTime + 4400);
+    }
+
+    function getIntroTiming() {
+        const stagger = width < 720 ? 0.055 : 0.065;
+        const span = width < 720 ? 0.95 : 1.10;
+        const settle = 0.38;
+
+        return {
+            stagger,
+            span,
+            total: Math.max(0, frameCount - 1) * stagger + span + settle,
+        };
+    }
+
+    function ringCenter() {
+        return {
+            x: width * 0.50,
+            y: height * (width < 720 ? 0.53 : 0.52),
+        };
+    }
+
+    function ringRadii() {
+        return {
+            x: Math.min(width * (width < 720 ? 0.38 : 0.43), width < 720 ? 240 : 620),
+            y: Math.min(height * (width < 720 ? 0.34 : 0.36), width < 720 ? 250 : 340),
+        };
+    }
+
+    function ringFrameMetrics(index, progress) {
+        const angle = -Math.PI / 2 + (index / frameCount) * Math.PI * 2;
+        const orbit = Math.sin(progress * Math.PI * 2 + index * 0.54) * 0.018;
+        const depth = 0.32 + 0.68 * ((Math.sin(angle) + 1) / 2);
+        const scale = (width < 720 ? 0.72 : 0.82) + depth * 0.22;
+        const baseW = Math.min(width * (width < 720 ? 0.34 : 0.18), 230);
+        const baseH = baseW * 0.62;
+        const w = baseW * scale;
+        const h = baseH * scale;
+        const side = Math.cos(angle);
+        const center = ringCenter();
+        const radii = ringRadii();
+        const ringX = center.x + Math.cos(angle + orbit) * radii.x;
+        const ringY = center.y + Math.sin(angle + orbit) * radii.y;
+        const ex = { x: w, y: -w * (0.08 + side * 0.025) };
+        const ey = { x: -h * (0.18 + side * 0.10), y: h };
+        const origin = {
+            x: ringX - (ex.x + ey.x) / 2,
+            y: ringY - (ex.y + ey.y) / 2,
+        };
+
+        return { index, depth, origin, ex, ey, w, h, angle };
+    }
+
+    function deckFrameMetrics(index) {
+        const baseW = Math.min(width * (width < 720 ? 0.34 : 0.18), 230);
+        const baseH = baseW * 0.62;
+        const w = baseW * (width < 720 ? 0.92 : 1.00);
+        const h = baseH * (width < 720 ? 0.92 : 1.00);
+        const center = {
+            x: width * 0.50,
+            y: height * (width < 720 ? 0.075 : 0.095),
+        };
+        const ex = { x: w, y: -w * 0.08 };
+        const ey = { x: -h * 0.22, y: h };
+        const origin = {
+            x: center.x - (ex.x + ey.x) / 2,
+            y: center.y - (ex.y + ey.y) / 2,
+        };
+
+        return { index, depth: 0.34, origin, ex, ey, w, h, angle: -Math.PI / 2 };
+    }
+
+    function frameGeometry(index, progress, introElapsed) {
+        const target = ringFrameMetrics(index, progress);
+        const source = index === 0
+            ? deckFrameMetrics(index)
+            : ringFrameMetrics(index - 1, progress);
+        const timing = getIntroTiming();
+        const introRaw = reducedMotion
+            ? 1
+            : (introElapsed - index * timing.stagger) / timing.span;
+        const intro = easeOutCubic(smoothstep(0, 1, introRaw));
+        const visibility = reducedMotion ? 1 : smoothstep(-0.05, 0.08, introRaw);
+        const origin = lerpPoint(source.origin, target.origin, intro);
+        const ex = lerpPoint(source.ex, target.ex, intro);
+        const ey = lerpPoint(source.ey, target.ey, intro);
+        const depth = lerp(source.depth, target.depth, intro);
+        const w = lerp(source.w, target.w, intro);
+        const h = lerp(source.h, target.h, intro);
+        const angle = lerp(source.angle, target.angle, intro);
+
+        return { index, depth, origin, ex, ey, w, h, angle, intro, visibility };
+    }
+
+    function pointOnFrame(geom, u, v) {
+        return {
+            x: geom.origin.x + geom.ex.x * u + geom.ey.x * v,
+            y: geom.origin.y + geom.ex.y * u + geom.ey.y * v,
+        };
+    }
+
+    function pathPolygon(points) {
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.closePath();
+    }
+
+    function drawProjectedToken(geom, u, v, size, color, alpha) {
+        const du = size / Math.max(geom.w, 1);
+        const dv = size / Math.max(geom.h, 1);
+        const points = [
+            pointOnFrame(geom, u - du, v - dv),
+            pointOnFrame(geom, u + du, v - dv),
+            pointOnFrame(geom, u + du, v + dv),
+            pointOnFrame(geom, u - du, v + dv),
+        ];
+
+        pathPolygon(points);
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+
+    function getMergeCells(cycleIndex) {
+        const layoutKey = `${frameCount}:${gridCols}:${gridRows}:${width < 720 ? "m" : "d"}`;
+        if (activeMergeCycle === cycleIndex && activeMergeLayoutKey === layoutKey) {
+            return activeMergeCells;
+        }
+
+        const count = width < 720 ? 5 : 8;
+        const cells = [];
+        const used = new Set();
+        const blue = [0, 113, 227];
+
+        for (let i = 0; i < count; i++) {
+            const baseSeed = mergeRandomBase + (cycleIndex + 1) * 97 + i * 31 + frameCount * 13;
+            const span = Math.min(
+                frameCount - 1,
+                3 + Math.floor(seededRandom(baseSeed + 1) * (width < 720 ? 2 : 3))
+            );
+            const ringSlot = Math.floor((i / count) * frameCount);
+            const jitter = Math.floor((seededRandom(baseSeed + 2) - 0.5) * 3);
+            const firstFrame = clamp(ringSlot + jitter, 0, Math.max(0, frameCount - span));
+            let col = Math.floor(seededRandom(baseSeed + 3) * gridCols);
+            let row = Math.floor(seededRandom(baseSeed + 4) * gridRows);
+
+            for (let attempt = 0; attempt < 6 && used.has(`${firstFrame}:${col}:${row}`); attempt++) {
+                col = (col + 1) % gridCols;
+                if (col === 0) row = (row + 1) % gridRows;
+            }
+
+            used.add(`${firstFrame}:${col}:${row}`);
+            cells.push({ firstFrame, span, col, row, color: blue });
+        }
+
+        activeMergeCycle = cycleIndex;
+        activeMergeLayoutKey = layoutKey;
+        activeMergeCells = cells;
+        return activeMergeCells;
+    }
+
+    function isMergeCell(frameIndex, col, row, mergeCells) {
+        return mergeCells.some(cell => (
+            col === cell.col &&
+            row === cell.row &&
+            frameIndex >= cell.firstFrame &&
+            frameIndex < Math.min(frameCount, cell.firstFrame + cell.span)
+        ));
+    }
+
+    function getMergeTokenState(frameIndex, col, row, mergeCells, progress) {
+        for (const cell of mergeCells) {
+            const lastFrame = Math.min(frameCount, cell.firstFrame + cell.span) - 1;
+            const inPath = col === cell.col &&
+                row === cell.row &&
+                frameIndex >= cell.firstFrame &&
+                frameIndex <= lastFrame;
+
+            if (!inPath) continue;
+
+            const turnOn = smoothstep(0.16, 0.30, progress);
+            const resetFade = 1 - smoothstep(0.90, 1.0, progress);
+            const isEndpoint = frameIndex === lastFrame;
+            const nonEndpointFade = isEndpoint ? 1 : 1 - smoothstep(0.66, 0.80, progress);
+
+            return {
+                active: turnOn * nonEndpointFade * resetFade,
+                endpoint: isEndpoint,
+                color: cell.color,
+            };
+        }
+
+        return { active: 0, endpoint: false, color: [0, 113, 227] };
+    }
+
+    function drawFramePlane(geom, progress) {
+        const visibility = geom.visibility ?? 1;
+        if (visibility <= 0.001) return;
+
+        const corners = [
+            pointOnFrame(geom, 0, 0),
+            pointOnFrame(geom, 1, 0),
+            pointOnFrame(geom, 1, 1),
+            pointOnFrame(geom, 0, 1),
+        ];
+        const depth = geom.depth;
+        const resetFade = (1 - smoothstep(0.90, 1.0, progress) * 0.35) * visibility;
+
+        ctx.save();
+        ctx.shadowColor = `rgba(102, 126, 234, ${(0.045 + depth * 0.055) * visibility})`;
+        ctx.shadowBlur = 18 + depth * 20;
+        pathPolygon(corners);
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.13 + depth * 0.10})`;
+        ctx.globalAlpha = resetFade;
+        ctx.fill();
+        ctx.restore();
+
+        pathPolygon(corners);
+        ctx.strokeStyle = `rgba(102, 126, 234, ${(0.07 + depth * 0.08) * visibility})`;
+        ctx.lineWidth = 1.15;
+        ctx.stroke();
+    }
+
+    function drawFrameTokens(geom, progress, mergeCells) {
+        const visibility = geom.visibility ?? 1;
+        if (visibility <= 0.001) return;
+
+        for (let row = 0; row < gridRows; row++) {
+            for (let col = 0; col < gridCols; col++) {
+                const u = (col + 0.5) / gridCols;
+                const v = (row + 0.5) / gridRows;
+                const texture = noise(col, row, geom.index);
+                const mergeState = getMergeTokenState(geom.index, col, row, mergeCells, progress);
+                const active = mergeState.active;
+                const base = 0.20 + geom.depth * 0.16 + texture * 0.05;
+                const alpha = clamp(base + active * 0.30, 0.07, 0.62) * visibility;
+                const size = (3.0 + active * 1.25) + geom.depth * 0.75;
+                const color = active > 0.02 ? rgba(mergeState.color, 1) : 'rgb(134, 134, 139)';
+
+                drawProjectedToken(geom, u, v, size, color, alpha);
+            }
+        }
+    }
+
+    function drawStackGuides(geometries, introGate) {
+        ctx.save();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(102, 126, 234, ${introGate * 0.05})`;
+        for (const corner of [[0, 0], [1, 0], [1, 1], [0, 1]]) {
+            ctx.beginPath();
+            geometries.forEach((geom, index) => {
+                const point = pointOnFrame(geom, corner[0], corner[1]);
+                if (index === 0) ctx.moveTo(point.x, point.y);
+                else ctx.lineTo(point.x, point.y);
+            });
+            ctx.closePath();
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function drawGlowPoint(point, radius, rgb, alpha) {
+        const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, radius * 3.4);
+        gradient.addColorStop(0, rgba(rgb, alpha));
+        gradient.addColorStop(0.38, rgba(rgb, alpha * 0.26));
+        gradient.addColorStop(1, rgba(rgb, 0));
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, radius * 3.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = rgba(rgb, Math.min(1, alpha + 0.15));
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function drawFusedTokenTile(point, size, rgb, alpha, tilt) {
+        const glow = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, size * 3.2);
+        glow.addColorStop(0, rgba(rgb, alpha * 0.26));
+        glow.addColorStop(0.50, rgba(rgb, alpha * 0.09));
+        glow.addColorStop(1, rgba(rgb, 0));
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size * 3.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        const c = Math.cos(tilt);
+        const s = Math.sin(tilt);
+        const halfW = size * 1.55;
+        const halfH = size * 0.95;
+        const corners = [
+            { x: -halfW, y: -halfH },
+            { x: halfW, y: -halfH },
+            { x: halfW, y: halfH },
+            { x: -halfW, y: halfH },
+        ].map(corner => ({
+            x: point.x + corner.x * c - corner.y * s,
+            y: point.y + corner.x * s + corner.y * c,
+        }));
+
+        ctx.save();
+        ctx.shadowColor = rgba(rgb, alpha * 0.32);
+        ctx.shadowBlur = size * 1.45;
+        pathPolygon(corners);
+        ctx.fillStyle = rgba(rgb, alpha * 0.58);
+        ctx.fill();
+        ctx.strokeStyle = rgba(rgb, Math.min(1, alpha * 0.82));
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function curvedSegmentControl(start, end) {
+        const center = ringCenter();
+        const radii = ringRadii();
+        const midpoint = {
+            x: (start.x + end.x) / 2,
+            y: (start.y + end.y) / 2,
+        };
+        const angleOf = point => Math.atan2(
+            (point.y - center.y) / radii.y,
+            (point.x - center.x) / radii.x
+        );
+        const radiusOf = point => Math.hypot(
+            (point.x - center.x) / radii.x,
+            (point.y - center.y) / radii.y
+        );
+        let startAngle = angleOf(start);
+        let endAngle = angleOf(end);
+
+        while (endAngle - startAngle > Math.PI) endAngle -= Math.PI * 2;
+        while (endAngle - startAngle < -Math.PI) endAngle += Math.PI * 2;
+
+        const midAngle = (startAngle + endAngle) / 2;
+        const arcRadius = (radiusOf(start) + radiusOf(end)) / 2;
+        const arcMidpoint = {
+            x: center.x + Math.cos(midAngle) * radii.x * arcRadius,
+            y: center.y + Math.sin(midAngle) * radii.y * arcRadius,
+        };
+
+        return {
+            x: 2 * arcMidpoint.x - midpoint.x,
+            y: 2 * arcMidpoint.y - midpoint.y,
+        };
+    }
+
+    function quadraticPoint(start, control, end, progress) {
+        const t = clamp(progress, 0, 1);
+        const inv = 1 - t;
+
+        return {
+            x: inv * inv * start.x + 2 * inv * t * control.x + t * t * end.x,
+            y: inv * inv * start.y + 2 * inv * t * control.y + t * t * end.y,
+        };
+    }
+
+    function pointAlongCurvedPath(points, progress) {
+        if (points.length === 0) return { x: 0, y: 0 };
+        if (points.length === 1) return points[0];
+
+        const scaled = clamp(progress, 0, 1) * (points.length - 1);
+        const index = Math.min(points.length - 2, Math.floor(scaled));
+        const local = scaled - index;
+        const start = points[index];
+        const end = points[index + 1];
+        const control = curvedSegmentControl(start, end);
+
+        return quadraticPoint(start, control, end, local);
+    }
+
+    function drawMergeSystem(progress, geometries, mergeCells) {
+        const linkAlpha = smoothstep(0.16, 0.34, progress) *
+            (1 - smoothstep(0.72, 0.88, progress)) *
+            (1 - smoothstep(0.92, 1.0, progress));
+        const mergeProgress = easeOutCubic(smoothstep(0.38, 0.66, progress));
+        const fusedAlpha = smoothstep(0.64, 0.80, progress) *
+            (1 - smoothstep(0.92, 1.0, progress));
+
+        mergeCells.forEach((cell, cellIndex) => {
+            const last = Math.min(frameCount, cell.firstFrame + cell.span);
+            const pts = [];
+            for (let frameIndex = cell.firstFrame; frameIndex < last; frameIndex++) {
+                const geom = geometries[frameIndex];
+                const u = (cell.col + 0.5) / gridCols;
+                const v = (cell.row + 0.5) / gridRows;
+                pts.push(pointOnFrame(geom, u, v));
+            }
+            if (pts.length < 2) return;
+
+            const target = pts[pts.length - 1];
+
+            if (linkAlpha > 0.01) {
+                ctx.save();
+                ctx.lineWidth = 1.6;
+                ctx.strokeStyle = rgba(cell.color, 0.30 * linkAlpha);
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                for (let i = 1; i < pts.length; i++) {
+                    const control = curvedSegmentControl(pts[i - 1], pts[i]);
+                    ctx.quadraticCurveTo(control.x, control.y, pts[i].x, pts[i].y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            for (let trail = 0; trail < 4; trail++) {
+                const trailProgress = easeOutCubic(clamp(mergeProgress - trail * 0.07, 0, 1));
+                if (trailProgress <= 0.001) continue;
+
+                const moving = pointAlongCurvedPath(pts, trailProgress);
+                const trailAlpha = 1 - trail * 0.22;
+                const particleAlpha = (
+                    linkAlpha * 0.34 +
+                    smoothstep(0.34, 0.70, progress) *
+                    (1 - smoothstep(0.78, 0.94, progress)) *
+                    0.50
+                ) * trailAlpha;
+
+                drawGlowPoint(moving, 2.2 + trailProgress * 1.10 - trail * 0.16, cell.color, particleAlpha);
+            }
+
+            if (fusedAlpha > 0.01) {
+                drawFusedTokenTile(
+                    target,
+                    3.4 + fusedAlpha * 1.35,
+                    cell.color,
+                    0.34 + fusedAlpha * 0.28,
+                    -0.22 + cellIndex * 0.18
+                );
+            }
+        });
+    }
+
+    function drawHeroFrame(now) {
+        if (!width || !height) return;
+
+        const cycle = 8.2;
+        const currentTime = typeof now === 'number' ? now : performance.now();
+        const introElapsed = (currentTime - animationStartTime) / 1000;
+        const introTiming = getIntroTiming();
+        const introGate = smoothstep(0, 1, (introElapsed - introTiming.total + 0.35) / 0.55);
+        const loopElapsed = Math.max(0, introElapsed - introTiming.total);
+        const cycleIndex = Math.floor(loopElapsed / cycle);
+        const progress = ((loopElapsed % cycle) + cycle) % cycle / cycle;
+        const effectProgress = introGate > 0 ? progress : 0;
+        const mergeCells = getMergeCells(cycleIndex);
+        const geometries = [];
+        const drawOrder = [];
+
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < frameCount; i++) {
+            geometries.push(frameGeometry(i, progress, introElapsed));
+        }
+        drawOrder.push(...geometries);
+        drawOrder.sort((a, b) => a.depth - b.depth);
+
+        drawStackGuides(geometries, introGate);
+
+        for (let i = 0; i < drawOrder.length; i++) {
+            drawFramePlane(drawOrder[i], effectProgress);
+            drawFrameTokens(drawOrder[i], effectProgress, mergeCells);
+        }
+
+        if (introGate > 0.02) {
+            drawMergeSystem(progress, geometries, mergeCells);
+        }
+
+        if (!reducedMotion && running) {
+            requestAnimationFrame(drawHeroFrame);
+        }
+    }
+
+    resizeHeroCanvas();
+    window.addEventListener('resize', resizeHeroCanvas);
+
+    if (reducedMotion) return;
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => {
+            const visible = entries[0].isIntersecting;
+            if (visible && !running) {
+                running = true;
+                requestAnimationFrame(drawHeroFrame);
+            } else if (!visible) {
+                running = false;
+            }
+        }, { threshold: 0.01 });
+        observer.observe(hero);
+    }
+
+    requestAnimationFrame(drawHeroFrame);
+}
+
 function toggleExpand(header) {
     const section = header.closest('.expandable-section');
     if (!section) return;
@@ -136,6 +712,7 @@ const embeddedCSVData = `Model,Size,Method,VideoNIAH_Edit,VideoNIAH_Insert1,Vide
 
 $(document).ready(function() {
     initializeNavigationChrome();
+    initializeFrameFusionHero();
     initializeScrollReveal();
 
     // Check for click events on the navbar burger icon
